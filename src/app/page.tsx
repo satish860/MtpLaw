@@ -1,8 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
-import Image from "next/image";
 import {
   Card,
   CardHeader,
@@ -47,8 +45,8 @@ export default function Home() {
             <Label htmlFor="pregnant-person">Pregnant Person/ Relative</Label>
           </div>
           <div className="flex items-center space-x-2 mb-2">
-            <RadioGroupItem value="rmp" id="rmp" />
-            <Label htmlFor="rmp">RMP Member</Label>
+            <RadioGroupItem value="rmp" id="cwc" />
+            <Label htmlFor="rmp">CWC</Label>
           </div>
           <div className="flex items-center space-x-2 mb-2">
             <RadioGroupItem value="doctor" id="doctor" />
