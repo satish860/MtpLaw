@@ -41,8 +41,13 @@ export default function Faqs() {
   const option = searchParams.get("option");
 
   useEffect(() => {
-    setFaqs(faqsData);
+    try {
+      setFaqs(faqsData);
+    } catch (error) {
+      console.error("Error loading FAQs:", error);
+    }
   }, []);
+
 
   const filteredFaqs =
     option && isValidOption(option)
