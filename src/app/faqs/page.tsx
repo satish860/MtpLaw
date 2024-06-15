@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import faqsData from "./faqs.json";
 import { useSearchParams } from "next/navigation";
 import { OptionsMap, FaqItem } from "@/lib/types";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const optionsMap: OptionsMap = {
   "pregnant-person": [
@@ -48,7 +50,6 @@ export default function Faqs() {
     }
   }, []);
 
-
   const filteredFaqs =
     option && isValidOption(option)
       ? faqs.filter((faq) =>
@@ -64,9 +65,11 @@ export default function Faqs() {
         );
 
   return (
-    <Card>
+    <Card className="max-w-full p-4 sm:p-6 md:p-8 lg:p-10">
       <CardHeader>
-        <CardTitle>Frequently Asked Questions</CardTitle>
+        <CardTitle className="text-lg sm:text-xl md:text-2xl lg:text-3xl">
+          Frequently Asked Questions
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <Input
@@ -74,13 +77,20 @@ export default function Faqs() {
           placeholder="Search FAQs..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="mb-4"
+          className="mb-4 w-full p-2 sm:p-3 md:p-4 lg:p-5"
         />
         <ul>
           {filteredFaqs.map((faq) => (
             <li key={faq.id} className="mb-6">
-              <h3 className="text-lg font-bold mb-2">{faq.question}</h3>
-              <p>{faq.answer}</p>
+              <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold mb-2">
+                {faq.question}
+              </h3>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                className="text-xs sm:text-sm md:text-base lg:text-lg text-justify"
+              >
+                {faq.answer}
+              </ReactMarkdown>
             </li>
           ))}
         </ul>
