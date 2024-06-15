@@ -80,7 +80,7 @@ export default function Home() {
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="other" id="other" />
             <Label htmlFor="other" className="text-sm sm:text-base">
-              Don't fit into the above categories
+              Don&apos;t fit into the above categories
             </Label>
           </div>
         </RadioGroup>
