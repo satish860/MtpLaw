@@ -4,10 +4,10 @@ export interface FaqItem {
   answer: string;
 }
 
-export interface IdRange {
+type IdRange = {
   start: number;
-  end: number | "Infinity";
-}
+  end: number | "Infinity"; // Adjust type to allow for "Infinity"
+};
 
 export interface OptionsMap {
   "pregnant-person": IdRange[];

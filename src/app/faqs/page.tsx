@@ -12,7 +12,8 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
+} from "@/components/ui/accordion";
+import Fuse from "fuse.js";
 
 const optionsMap: OptionsMap = {
   "pregnant-person": [
@@ -45,30 +46,42 @@ function isValidOption(option: string): option is OptionKeys {
 export default function Faqs() {
   const [searchQuery, setSearchQuery] = useState("");
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
+  const [filteredFaqs, setFilteredFaqs] = useState<FaqItem[]>([]);
   const searchParams = useSearchParams();
   const option = searchParams.get("option");
 
   useEffect(() => {
     try {
-      setFaqs(faqsData);
+      setFaqs(faqsData as FaqItem[]);
     } catch (error) {
       console.error("Error loading FAQs:", error);
     }
   }, []);
 
-  const filteredFaqs =
-    option && isValidOption(option)
-      ? faqs.filter((faq) =>
-          optionsMap[option].some(
-            (range) =>
-              faq.id >= range.start &&
-              faq.id <= (range.end === "Infinity" ? Infinity : range.end) &&
-              faq.question.toLowerCase().includes(searchQuery.toLowerCase())
-          )
+  useEffect(() => {
+    if (option && isValidOption(option)) {
+      const ranges = optionsMap[option];
+      const filtered = faqs.filter((faq) =>
+        ranges.some(
+          (range) =>
+            faq.id >= range.start &&
+            (range.end === "Infinity" || faq.id <= range.end)
         )
-      : faqs.filter((faq) =>
-          faq.question.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+      );
+      setFilteredFaqs(filtered);
+    } else {
+      setFilteredFaqs(faqs);
+    }
+  }, [faqs, option]);
+
+  const fuseOptions = {
+    keys: ["question", "answer"],
+  };
+
+  const fuse = new Fuse(filteredFaqs, fuseOptions);
+
+  const searchResults = searchQuery ? fuse.search(searchQuery) : filteredFaqs;
+  const finalFilteredFaqs = searchResults.map((result) => ('item' in result ? result.item : result));
 
   return (
     <Card className="max-w-full p-4 sm:p-6 md:p-8 lg:p-10">
@@ -86,23 +99,21 @@ export default function Faqs() {
           className="mb-4 w-full p-2 sm:p-3 md:p-4 lg:p-5"
         />
         <ul>
-          {filteredFaqs.map((faq) => (
-
+          {finalFilteredFaqs.map((faq) => (
             <li key={faq.id} className="mb-6">
               <Accordion type="single" collapsible>
-            <AccordionItem value="item-1">
-              <AccordionTrigger>{faq.question}</AccordionTrigger>
-              <AccordionContent>
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                className="text-xs sm:text-sm md:text-base lg:text-lg text-justify"
-              >
-                {faq.answer}
-              </ReactMarkdown>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-             
+                <AccordionItem value="item-1">
+                  <AccordionTrigger>{faq.question}</AccordionTrigger>
+                  <AccordionContent>
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      className="text-xs sm:text-sm md:text-base lg:text-lg text-justify"
+                    >
+                      {faq.answer}
+                    </ReactMarkdown>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </li>
           ))}
         </ul>
