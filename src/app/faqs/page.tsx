@@ -7,6 +7,12 @@ import { useSearchParams } from "next/navigation";
 import { OptionsMap, FaqItem } from "@/lib/types";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 
 const optionsMap: OptionsMap = {
   "pregnant-person": [
@@ -81,16 +87,22 @@ export default function Faqs() {
         />
         <ul>
           {filteredFaqs.map((faq) => (
+
             <li key={faq.id} className="mb-6">
-              <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold mb-2">
-                {faq.question}
-              </h3>
+              <Accordion type="single" collapsible>
+            <AccordionItem value="item-1">
+              <AccordionTrigger>{faq.question}</AccordionTrigger>
+              <AccordionContent>
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 className="text-xs sm:text-sm md:text-base lg:text-lg text-justify"
               >
                 {faq.answer}
               </ReactMarkdown>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+             
             </li>
           ))}
         </ul>
